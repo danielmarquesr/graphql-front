@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  front:
+    build: .
+    image: hello-graphql-front
+    command: yarn start
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/code
+    environment:
+      - PORT=8000
+      - BACKEND_DOMAIN=http://localhost:3000
