@@ -4,7 +4,7 @@ services:
   front:
     build: .
     image: hello-graphql-front
-    command: yarn start
+    command: sh run.sh
     ports:
       - 8000:8000
     volumes:
