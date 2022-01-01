@@ -1,6 +1,6 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import { SignIn } from '../pages/SignIn/SignIn';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { SignIn } from 'src/pages/SignIn/SignIn';
 
 export const AppRoute = () => (
   <Routes>
