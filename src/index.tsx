@@ -1,13 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './assets/css/index.css';
+import { RelayEnvironmentProvider } from 'react-relay';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import RelayEnvironment from './relay/RelayEnvironment';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <RelayEnvironmentProvider environment={RelayEnvironment}>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </RelayEnvironmentProvider>,
   document.getElementById('root')
 );
 
