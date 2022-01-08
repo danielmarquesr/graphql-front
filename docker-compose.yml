@@ -4,6 +4,7 @@ services:
   front:
     build: .
     image: hello-graphql-front
+    container_name: front
     command: sh run.sh
     ports:
       - 8000:8000
@@ -11,4 +12,11 @@ services:
       - .:/code
     environment:
       - PORT=8000
-      - BACKEND_DOMAIN=http://localhost:3000
+      - REACT_APP_BACKEND_DOMAIN=http://localhost:3000
+    networks:
+      - default
+      - hello-graphql
+
+networks:
+  hello-graphql:
+    external: true
