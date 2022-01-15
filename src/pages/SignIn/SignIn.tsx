@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { graphql } from 'babel-plugin-relay/macro';
 import { PayloadError } from 'relay-runtime';
+import { Link, useNavigate } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import { SignInMutation } from './__generated__/SignInMutation.graphql';
 
 const mutation = graphql`
@@ -12,34 +15,50 @@ const mutation = graphql`
   }
 `;
 
+interface Values {
+  email: string;
+  password: string;
+}
+
+const validationSchema = yup.object().shape({
+  email: yup.string().email().required(),
+  password: yup.string().min(8).max(50).required(),
+});
+
 export const SignIn = () => {
-  const [commit, isInFlight] = useMutation<SignInMutation>(mutation);
+  const [commit, loading] = useMutation<SignInMutation>(mutation);
+  const navigate = useNavigate();
 
   const [errors, setErrors] = useState(null as PayloadError[] | null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
-  const handleSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+  const formik = useFormik<Values>({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema,
+    onSubmit: () => {
+      const { email, password } = formik.values;
+      commit({
+        variables: { input: { email, password } },
+        onCompleted: (data, error) => {
+          const token = data.SignIn?.token;
 
-    setErrors(null);
+          if (!token) {
+            setErrors(error);
+            return;
+          }
 
-    commit({
-      variables: { input: { email, password } },
-      onCompleted: (data, error) => {
-        const token = data.SignIn?.token;
-        if (!token) {
-          setErrors(error);
-          return;
-        }
-        localStorage.setItem('jwt-token', token);
-      },
-    });
-  };
+          localStorage.setItem('token', token);
+          navigate('/');
+        },
+      });
+    },
+  });
 
   return (
     <>
-      <h1>SignIn</h1>
+      <h1>Sign In</h1>
 
       <div>
         {errors?.map(({ message }) => (
@@ -47,13 +66,14 @@ export const SignIn = () => {
         ))}
       </div>
 
-      <form>
+      <form onSubmit={formik.handleSubmit}>
         <input
           type="email"
           placeholder="email"
           name="email"
           id="email"
-          onChange={({ target }) => setEmail(target.value)}
+          onChange={formik.handleChange}
+          value={formik.values.email}
         />
         <br />
         <br />
@@ -62,13 +82,19 @@ export const SignIn = () => {
           placeholder="password"
           name="password"
           id="password"
-          onChange={({ target }) => setPassword(target.value)}
+          onChange={formik.handleChange}
+          value={formik.values.password}
         />
         <br />
         <br />
-        <button type="submit" disabled={isInFlight} onClick={handleSubmit}>
-          {isInFlight ? 'Loading...' : 'Sign In'}
+        <button
+          type="submit"
+          disabled={!formik.isValid || !formik.dirty || loading}
+        >
+          {loading ? 'Loading' : 'Submit'}
         </button>
+
+        <Link to="/signup">Sign Up</Link>
       </form>
     </>
   );
