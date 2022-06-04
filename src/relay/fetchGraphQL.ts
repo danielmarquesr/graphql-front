@@ -1,6 +1,6 @@
 import { RequestParameters, Variables } from 'relay-runtime';
 
-const fetchGraphQL = async (
+const getResponseData = async (
   operation: RequestParameters,
   variables: Variables
 ) => {
@@ -17,24 +17,31 @@ const fetchGraphQL = async (
     body: JSON.stringify({ query: operation.text, variables }),
   });
 
-  const data = await response.json();
+  return response.json();
+};
+
+const throwGraphQLError = (errors: Error[]) => {
+  const error = new Error('ApiError');
+  (error as any).errors = errors;
+
+  const isAuthError = errors.some(({ name }) => name === 'AuthError');
+
+  if (isAuthError) {
+    localStorage.removeItem('token');
+    error.name = 'AuthError';
+  }
+
+  throw error;
+};
+
+const fetchGraphQL = async (
+  operation: RequestParameters,
+  variables: Variables
+) => {
+  const data = await getResponseData(operation, variables);
 
   const { errors } = data;
-  if (errors) {
-    const error = new Error('ApiError');
-    (error as any).errors = errors;
-
-    const isAuthError = errors.includes(
-      (item: { name: string }) => item.name === 'AuthError'
-    );
-
-    if (isAuthError) {
-      localStorage.removeItem('token');
-      error.name = 'AuthError';
-    }
-
-    throw error;
-  }
+  if (errors) throwGraphQLError(errors);
 
   return data;
 };
