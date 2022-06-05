@@ -23,8 +23,8 @@ export const ConfirmEmail = () => {
   const [searchParams] = useSearchParams();
   const [commit, loading] = useMutation<ConfirmEmailMutation>(mutation);
 
-  const [user, setUser] = useState(null as User);
-  const [errors, setErrors] = useState(null as PayloadError[] | null);
+  const [user, setUser] = useState<User | null>(null);
+  const [errors, setErrors] = useState<PayloadError[] | null>(null);
 
   useEffect(() => {
     const confirmEmail = () => {
@@ -44,7 +44,7 @@ export const ConfirmEmail = () => {
     confirmEmail();
   }, []);
 
-  if (loading) return null;
+  if (loading) return <>loading...</>;
 
   return (
     <>
