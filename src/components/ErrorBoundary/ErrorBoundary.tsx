@@ -1,12 +1,13 @@
 import React, { Component, ReactNode } from 'react';
+import { GraphQLError } from 'src/relay/fetchGraphQL';
 
 interface Props {
   children: ReactNode;
-  fallback: any;
+  fallback: (error: GraphQLError) => JSX.Element;
 }
 
 interface State {
-  error: Error | null;
+  error: GraphQLError | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -15,7 +16,7 @@ export class ErrorBoundary extends Component<Props, State> {
     this.state = { error: null };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: GraphQLError): State {
     return { error };
   }
 
@@ -23,7 +24,7 @@ export class ErrorBoundary extends Component<Props, State> {
     const { children, fallback } = this.props;
     const { error } = this.state;
 
-    if (error) return React.createElement(fallback, { error });
+    if (error) return fallback(error);
 
     return children;
   }
