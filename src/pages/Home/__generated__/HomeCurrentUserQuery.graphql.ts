@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<51701e35d0e8131ec6a1659c357f6808>>
+ * @generated SignedSource<<38acbf478eff065cff128211232f579a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,6 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 export type HomeCurrentUserQuery$variables = {};
-export type HomeCurrentUserQueryVariables = HomeCurrentUserQuery$variables;
 export type HomeCurrentUserQuery$data = {
   readonly CurrentUser: {
     readonly id: string;
@@ -19,9 +18,8 @@ export type HomeCurrentUserQuery$data = {
     readonly lastName: string | null;
   } | null;
 };
-export type HomeCurrentUserQueryResponse = HomeCurrentUserQuery$data;
 export type HomeCurrentUserQuery = {
-  variables: HomeCurrentUserQueryVariables;
+  variables: HomeCurrentUserQuery$variables;
   response: HomeCurrentUserQuery$data;
 };
 

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1b58539695fcb6faeb45adb8785be4f1>>
+ * @generated SignedSource<<56912efc8bbd1e478b1f5572dc469c09>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,16 +15,14 @@ export type TokenSHA256 = {
 export type ConfirmEmailMutation$variables = {
   input: TokenSHA256;
 };
-export type ConfirmEmailMutationVariables = ConfirmEmailMutation$variables;
 export type ConfirmEmailMutation$data = {
   readonly ConfirmEmail: {
     readonly id: string;
     readonly email: string;
   } | null;
 };
-export type ConfirmEmailMutationResponse = ConfirmEmailMutation$data;
 export type ConfirmEmailMutation = {
-  variables: ConfirmEmailMutationVariables;
+  variables: ConfirmEmailMutation$variables;
   response: ConfirmEmailMutation$data;
 };
 
