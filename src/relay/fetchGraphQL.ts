@@ -1,7 +1,17 @@
 import { RequestParameters, Variables } from 'relay-runtime';
 
+export class GraphQLError extends Error {
+  errors: Error[];
+
+  constructor(errors: Error[]) {
+    super('GraphQLError');
+    this.errors = errors;
+    if (Error.captureStackTrace) Error.captureStackTrace(this, GraphQLError);
+  }
+}
+
 const getResponseData = async (
-  operation: RequestParameters,
+  { text }: RequestParameters,
   variables: Variables
 ) => {
   const { REACT_APP_BACKEND_DOMAIN } = process.env;
@@ -14,22 +24,17 @@ const getResponseData = async (
       ...(jwtToken && { Authorization: `Bearer ${jwtToken}` }),
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ query: operation.text, variables }),
+    body: JSON.stringify({ query: text, variables }),
   });
 
   return response.json();
 };
 
 const throwGraphQLError = (errors: Error[]) => {
-  const error = new Error('ApiError');
-  (error as any).errors = errors;
+  const error = new GraphQLError(errors);
+  const isAuthError = error.errors.some(({ name }) => name === 'AuthError');
 
-  const isAuthError = errors.some(({ name }) => name === 'AuthError');
-
-  if (isAuthError) {
-    localStorage.removeItem('token');
-    error.name = 'AuthError';
-  }
+  if (isAuthError) localStorage.removeItem('token');
 
   throw error;
 };
