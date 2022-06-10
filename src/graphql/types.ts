@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { GraphQLClient } from 'graphql-request';
 import { RequestInit } from 'graphql-request/dist/types.dom';
 import {
@@ -7,7 +6,6 @@ import {
   UseMutationOptions,
   UseQueryOptions,
 } from 'react-query';
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
