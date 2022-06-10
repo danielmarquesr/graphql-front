@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import { AppRoute } from 'src/routes/AppRoute';
 
@@ -10,12 +11,16 @@ const ScrollToTop = () => {
   return null;
 };
 
+const queryClient = new QueryClient();
+
 const App = () => (
   <div className="App">
-    <BrowserRouter>
-      <ScrollToTop />
-      <AppRoute />
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <ScrollToTop />
+        <AppRoute />
+      </BrowserRouter>
+    </QueryClientProvider>
   </div>
 );
 
