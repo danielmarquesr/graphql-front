@@ -1,13 +1,14 @@
 import React from 'react';
-import { graphql } from 'babel-plugin-relay/macro';
-import { useMutation } from 'react-relay';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { SignUpMutation } from './__generated__/SignUpMutation.graphql';
+import { gql } from 'graphql-request';
+import { useSignUpMutation } from 'src/graphql/types';
+import { client } from 'src/graphql/client';
 
-const mutation = graphql`
-  mutation SignUpMutation($input: UserInput!) {
+// eslint-disable-next-line no-unused-expressions
+gql`
+  mutation SignUp($input: UserInput!) {
     SignUp(input: $input) {
       id
       email
@@ -35,8 +36,7 @@ const validationSchema = yup.object().shape({
 });
 
 export const SignUp = () => {
-  const [commit, loading] = useMutation<SignUpMutation>(mutation);
-
+  const { isLoading, mutate } = useSignUpMutation(client);
   const formik = useFormik<Values>({
     initialValues: {
       email: '',
@@ -48,13 +48,7 @@ export const SignUp = () => {
     validationSchema,
     onSubmit: () => {
       const { email, firstName, lastName, password } = formik.values;
-      commit({
-        variables: { input: { email, firstName, lastName, password } },
-        onCompleted: (data, error) => {
-          console.log('data', data);
-          console.log('error', error);
-        },
-      });
+      mutate({ input: { email, firstName, lastName, password } });
     },
   });
 
@@ -115,9 +109,9 @@ export const SignUp = () => {
         <br />
         <button
           type="submit"
-          disabled={!formik.isValid || !formik.dirty || loading}
+          disabled={!formik.isValid || !formik.dirty || isLoading}
         >
-          {loading ? 'Loading' : 'Submit'}
+          {isLoading ? 'Loading' : 'Submit'}
         </button>
 
         <Link to="/signin">Sign In</Link>

@@ -1,9 +1,8 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { HomeCurrentUserQuery$data } from 'src/pages/Home/__generated__/HomeCurrentUserQuery.graphql';
 
 export interface HeaderProps {
-  data: HomeCurrentUserQuery$data;
+  data: any;
 }
 
 export const Header = ({ data }: HeaderProps) => {
@@ -16,16 +15,16 @@ export const Header = ({ data }: HeaderProps) => {
 
   return (
     <div>
-      {data.CurrentUser ? (
+      {data ? (
         <>
           <div>
-            ID: {data.CurrentUser.id}
+            ID: {data.id}
             <br />
-            Email: {data.CurrentUser.email}
+            Email: {data.email}
             <br />
-            First name: {data.CurrentUser.firstName}
+            First name: {data.firstName}
             <br />
-            Last name: {data.CurrentUser.lastName}
+            Last name: {data.lastName}
           </div>
           <br />
           <div>
@@ -35,7 +34,11 @@ export const Header = ({ data }: HeaderProps) => {
           </div>
         </>
       ) : (
-        <Link to="/signin">Sign In</Link>
+        <>
+          <Link to="/signin">Sign In</Link>
+          <br />
+          <Link to="/signup">Sign Up</Link>
+        </>
       )}
     </div>
   );

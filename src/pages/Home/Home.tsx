@@ -1,11 +1,11 @@
-import React from 'react';
-import { graphql } from 'babel-plugin-relay/macro';
-import { useLazyLoadQuery } from 'react-relay';
+import React, { useEffect, useState } from 'react';
+import { gql } from 'graphql-request';
 import { Header } from 'src/components';
-import { HomeCurrentUserQuery } from './__generated__/HomeCurrentUserQuery.graphql';
+import { client } from 'src/graphql/client';
+import { HomeCurrentUserQuery } from 'src/graphql/types';
 
-const CurrentUserQuery = graphql`
-  query HomeCurrentUserQuery {
+const homeCurrentUserQuery = gql`
+  query HomeCurrentUser {
     CurrentUser {
       id
       email
@@ -16,19 +16,42 @@ const CurrentUserQuery = graphql`
 `;
 
 export const Home = () => {
-  const data = useLazyLoadQuery<HomeCurrentUserQuery>(
-    CurrentUserQuery,
-    {},
-    { fetchPolicy: 'store-or-network' }
+  const [user, setUser] = useState<HomeCurrentUserQuery['CurrentUser'] | null>(
+    null
   );
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem('token');
+
+        if (!token) return;
+
+        const { CurrentUser } = await client.request<HomeCurrentUserQuery>(
+          homeCurrentUserQuery
+        );
+        setUser(CurrentUser);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) return null;
 
   return (
     <>
       <h1>Home</h1>
 
-      <p>Data: {JSON.stringify(data)}</p>
+      <p>Data: {JSON.stringify(user)}</p>
 
-      <Header data={data} />
+      <Header data={user} />
     </>
   );
 };

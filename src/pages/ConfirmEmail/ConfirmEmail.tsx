@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { graphql } from 'babel-plugin-relay/macro';
-import { useMutation } from 'react-relay';
+import React, { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { PayloadError } from 'relay-runtime';
-import {
-  ConfirmEmailMutation,
-  ConfirmEmailMutation$data,
-} from './__generated__/ConfirmEmailMutation.graphql';
+import { gql } from 'graphql-request';
+import { client } from 'src/graphql/client';
+import { useConfirmEmailMutation } from 'src/graphql/types';
 
-const mutation = graphql`
-  mutation ConfirmEmailMutation($input: TokenSHA256!) {
+// eslint-disable-next-line no-unused-expressions
+gql`
+  mutation ConfirmEmail($input: TokenSHA256!) {
     ConfirmEmail(input: $input) {
       id
       email
@@ -17,14 +14,10 @@ const mutation = graphql`
   }
 `;
 
-type User = ConfirmEmailMutation$data['ConfirmEmail'];
-
 export const ConfirmEmail = () => {
   const [searchParams] = useSearchParams();
-  const [commit, loading] = useMutation<ConfirmEmailMutation>(mutation);
 
-  const [user, setUser] = useState<User | null>(null);
-  const [errors, setErrors] = useState<PayloadError[] | null>(null);
+  const { data, isLoading, error, mutate } = useConfirmEmailMutation(client);
 
   useEffect(() => {
     const confirmEmail = () => {
@@ -32,29 +25,23 @@ export const ConfirmEmail = () => {
 
       if (!token || token.length === 0) return;
 
-      commit({
-        variables: { input: { token } },
-        onCompleted: (data, errorsList) => {
-          setUser(data.ConfirmEmail);
-          setErrors(errorsList);
-        },
-      });
+      mutate({ input: { token } });
     };
 
     confirmEmail();
   }, []);
 
-  if (loading) return <>loading...</>;
+  if (isLoading) return <>loading...</>;
 
   return (
     <>
       <h1>Confirmation Email</h1>
 
-      {user ? (
+      {data?.ConfirmEmail ? (
         <>
           <div>
-            Congratulations! Your email ({user.email}) was successfully
-            confirmed
+            Congratulations! Your email ({data.ConfirmEmail.email}) was
+            successfully confirmed
           </div>
 
           <div>
@@ -66,8 +53,8 @@ export const ConfirmEmail = () => {
           <div>Was not possible to confirm your email, try again later...</div>
 
           <div>
-            {errors?.map(({ message }) => (
-              <div key={message}>{message}</div>
+            {(error as any).response.errors.map((item: any) => (
+              <div key={item.message}>{item.message}</div>
             ))}
           </div>
         </>

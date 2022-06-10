@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { useMutation } from 'react-relay';
-import { graphql } from 'babel-plugin-relay/macro';
-import { PayloadError } from 'relay-runtime';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { gql } from 'graphql-request';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { SignInMutation } from './__generated__/SignInMutation.graphql';
+import { useSignInMutation } from 'src/graphql/types';
+import { client } from 'src/graphql/client';
 
-const mutation = graphql`
-  mutation SignInMutation($input: AuthInput!) {
+// eslint-disable-next-line no-unused-expressions
+gql`
+  mutation SignIn($input: AuthInput!) {
     SignIn(input: $input) {
       token
     }
@@ -26,10 +26,9 @@ const validationSchema = yup.object().shape({
 });
 
 export const SignIn = () => {
-  const [commit, loading] = useMutation<SignInMutation>(mutation);
   const navigate = useNavigate();
 
-  const [errors, setErrors] = useState(null as PayloadError[] | null);
+  const { data, isLoading, error, mutate } = useSignInMutation(client);
 
   const formik = useFormik<Values>({
     initialValues: {
@@ -39,20 +38,15 @@ export const SignIn = () => {
     validationSchema,
     onSubmit: () => {
       const { email, password } = formik.values;
-      commit({
-        variables: { input: { email, password } },
-        onCompleted: (data, error) => {
-          const token = data.SignIn?.token;
 
-          if (!token) {
-            setErrors(error);
-            return;
-          }
+      mutate({ input: { email, password } });
 
-          localStorage.setItem('token', token);
-          navigate('/');
-        },
-      });
+      const token = data?.SignIn?.token;
+
+      if (!token || token.length === 0) return;
+
+      localStorage.setItem('token', token);
+      navigate('/');
     },
   });
 
@@ -61,8 +55,8 @@ export const SignIn = () => {
       <h1>Sign In</h1>
 
       <div>
-        {errors?.map(({ message }) => (
-          <div key={message}>{message}</div>
+        {(error as any)?.response.errors.map((item: any) => (
+          <div key={item.message}>{item.message}</div>
         ))}
       </div>
 
@@ -89,9 +83,9 @@ export const SignIn = () => {
         <br />
         <button
           type="submit"
-          disabled={!formik.isValid || !formik.dirty || loading}
+          disabled={!formik.isValid || !formik.dirty || isLoading}
         >
-          {loading ? 'Loading' : 'Submit'}
+          {isLoading ? 'Loading' : 'Submit'}
         </button>
 
         <Link to="/signup">Sign Up</Link>
