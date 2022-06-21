@@ -3,8 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { gql } from 'graphql-request';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { useSignInMutation } from 'src/graphql/types.d';
-import { client } from 'src/graphql/client';
+import { client, useSignInMutation } from 'src/graphql';
 
 // eslint-disable-next-line no-unused-expressions
 gql`

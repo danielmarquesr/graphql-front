@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { gql } from 'graphql-request';
-import { useSignUpMutation } from 'src/graphql/types.d';
-import { client } from 'src/graphql/client';
+import { client, useSignUpMutation } from 'src/graphql';
 
 // eslint-disable-next-line no-unused-expressions
 gql`

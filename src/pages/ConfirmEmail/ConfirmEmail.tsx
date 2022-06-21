@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { gql } from 'graphql-request';
-import { client } from 'src/graphql/client';
-import { useConfirmEmailMutation } from 'src/graphql/types.d';
+import { client, useConfirmEmailMutation } from 'src/graphql';
 
 // eslint-disable-next-line no-unused-expressions
 gql`
@@ -37,7 +36,7 @@ export const ConfirmEmail = () => {
     <>
       <h1>Confirmation Email</h1>
 
-      {data?.ConfirmEmail ? (
+      {data?.ConfirmEmail?.id ? (
         <>
           <div>
             Congratulations! Your email ({data.ConfirmEmail.email}) was
