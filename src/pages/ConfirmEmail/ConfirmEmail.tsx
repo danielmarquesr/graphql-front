@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { gql } from 'graphql-request';
 import { client } from 'src/graphql/client';
-import { useConfirmEmailMutation } from 'src/graphql/types';
+import { useConfirmEmailMutation } from 'src/graphql/types.d';
 
 // eslint-disable-next-line no-unused-expressions
 gql`

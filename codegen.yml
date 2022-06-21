@@ -1,7 +1,7 @@
 schema: http://api:3000/graphql
 documents: './src/pages/**/*.tsx'
 generates:
-  ./src/graphql/types.ts:
+  ./src/graphql/types.d.ts:
     plugins:
       - typescript
       - typescript-operations

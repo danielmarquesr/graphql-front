@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { gql } from 'graphql-request';
 import { Header } from 'src/components';
 import { client } from 'src/graphql/client';
-import { HomeCurrentUserQuery } from 'src/graphql/types';
+import { HomeCurrentUserQuery } from 'src/graphql/types.d';
 
 const homeCurrentUserQuery = gql`
   query HomeCurrentUser {
