@@ -1,7 +1,7 @@
 import { GraphQLClient } from 'graphql-request';
 
-const { REACT_APP_BACKEND_DOMAIN } = process.env;
-export const GRAPHQL_ENDPOINT = `${REACT_APP_BACKEND_DOMAIN}/graphql`;
+const { REACT_APP_BACKEND_HOST } = process.env;
+export const GRAPHQL_ENDPOINT = `${REACT_APP_BACKEND_HOST}/graphql`;
 
 export class GraphQLClient2 {
   private static instance: GraphQLClient;
