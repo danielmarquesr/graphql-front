@@ -1,34 +1,27 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { HomeCurrentUserQuery } from 'src/graphql';
 
 export interface HeaderProps {
-  data: any;
+  user: HomeCurrentUserQuery['CurrentUser'] | null;
+  logout: () => void;
 }
 
-export const Header = ({ data }: HeaderProps) => {
-  const navigate = useNavigate();
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    navigate('/');
+export const Header = ({ user, logout }: HeaderProps) => {
+  const onClickLogout = () => {
+    logout();
   };
 
   return (
-    <div>
-      {data ? (
+    <header>
+      {user ? (
         <>
           <div>
-            ID: {data.id}
-            <br />
-            Email: {data.email}
-            <br />
-            First name: {data.firstName}
-            <br />
-            Last name: {data.lastName}
+            Name: {user.firstName} {user.lastName}
           </div>
           <br />
           <div>
-            <button type="button" onClick={logout}>
+            <button type="button" onClick={onClickLogout}>
               Logout
             </button>
           </div>
@@ -40,6 +33,6 @@ export const Header = ({ data }: HeaderProps) => {
           <Link to="/signup">Sign Up</Link>
         </>
       )}
-    </div>
+    </header>
   );
 };
