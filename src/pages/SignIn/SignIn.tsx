@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { gql } from 'graphql-request';
 import { useFormik } from 'formik';
@@ -39,15 +39,18 @@ export const SignIn = () => {
       const { email, password } = formik.values;
 
       mutate({ input: { email, password } });
-
-      const token = data?.SignIn?.token;
-
-      if (!token || token.length === 0) return;
-
-      localStorage.setItem('token', token);
-      navigate('/');
     },
   });
+
+  useEffect(() => {
+    const token = data?.SignIn?.token;
+
+    if (!token || token.length === 0) return;
+
+    client.setHeader('Authorization', token);
+    localStorage.setItem('token', token);
+    navigate('/');
+  }, [data?.SignIn?.token]);
 
   return (
     <>
