@@ -8,7 +8,10 @@ export class GraphQLClient2 {
 
   constructor() {
     if (!GraphQLClient2.instance) {
-      GraphQLClient2.instance = new GraphQLClient(GRAPHQL_ENDPOINT);
+      const token = localStorage.getItem('token');
+      GraphQLClient2.instance = new GraphQLClient(GRAPHQL_ENDPOINT, {
+        ...(token && { headers: { Authorization: token } }),
+      });
     }
   }
 
