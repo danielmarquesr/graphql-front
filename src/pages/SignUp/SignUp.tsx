@@ -1,9 +1,9 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { gql } from 'graphql-request';
-import { client, useSignUpMutation } from 'src/graphql';
+import { client, UserInput, useSignUpMutation } from 'src/graphql';
 
 // eslint-disable-next-line no-unused-expressions
 gql`
@@ -15,18 +15,18 @@ gql`
   }
 `;
 
-interface Values {
-  email: string;
+interface SignUpValues {
+  email: UserInput['email'];
   firstName: string;
   lastName: string;
-  password: string;
-  confirmPassword: string;
+  password: UserInput['password'];
+  confirmPassword: UserInput['password'];
 }
 
 const validationSchema = yup.object().shape({
   email: yup.string().email().required(),
-  firstName: yup.string().min(3).max(50).required(),
-  lastName: yup.string().min(3).max(50).required(),
+  firstName: yup.string().min(3).max(50),
+  lastName: yup.string().min(3).max(50),
   password: yup.string().min(8).max(50).required(),
   confirmPassword: yup
     .string()
@@ -35,8 +35,9 @@ const validationSchema = yup.object().shape({
 });
 
 export const SignUp = () => {
-  const { isLoading, mutate } = useSignUpMutation(client);
-  const formik = useFormik<Values>({
+  const { isLoading, mutate, error, isSuccess } = useSignUpMutation(client);
+  const navigate = useNavigate();
+  const formik = useFormik<SignUpValues>({
     initialValues: {
       email: '',
       firstName: '',
@@ -50,6 +51,10 @@ export const SignUp = () => {
       mutate({ input: { email, firstName, lastName, password } });
     },
   });
+
+  useEffect(() => {
+    if (isSuccess) navigate('/signin');
+  }, [isSuccess]);
 
   return (
     <>
@@ -112,6 +117,12 @@ export const SignUp = () => {
         >
           {isLoading ? 'Loading' : 'Submit'}
         </button>
+
+        <div>
+          {(error as any)?.response.errors.map((item: any) => (
+            <div key={item.message}>{item.message}</div>
+          ))}
+        </div>
 
         <Link to="/signin">Sign In</Link>
       </form>
