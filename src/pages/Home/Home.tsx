@@ -42,15 +42,21 @@ export const Home = () => {
     fetchData();
   }, []);
 
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('token');
+    client.setHeaders(undefined);
+  };
+
   if (isLoading) return null;
 
   return (
     <>
+      <Header user={user} logout={logout} />
+
       <h1>Home</h1>
 
       <p>Data: {JSON.stringify(user)}</p>
-
-      <Header data={user} />
     </>
   );
 };
