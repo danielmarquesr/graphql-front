@@ -9,6 +9,13 @@ const theme = {
       bold: 600,
       bolder: 700,
     },
+    size: {
+      xsmall: '0.4rem',
+      small: '0.8rem',
+      medium: '1rem',
+      large: '1.6rem',
+      xlarge: '2rem',
+    },
   },
   colors: {
     primary: '',

@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { gql } from 'graphql-request';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { client, useSignInMutation } from 'src/graphql';
+import { client, UserInput, useSignInMutation } from 'src/graphql';
+import { Button, Input, Spacer, Text } from 'src/components';
+import * as S from './SignIn.styles';
 
 // eslint-disable-next-line no-unused-expressions
 gql`
@@ -15,8 +17,8 @@ gql`
 `;
 
 interface Values {
-  email: string;
-  password: string;
+  email: UserInput['email'];
+  password: UserInput['password'];
 }
 
 const validationSchema = yup.object().shape({
@@ -53,45 +55,53 @@ export const SignIn = () => {
   }, [data?.SignIn?.token]);
 
   return (
-    <>
-      <h1>Sign In</h1>
+    <S.ContainerWrapper>
+      <S.Wrapper>
+        <Text variant="title">Sign In</Text>
 
-      <div>
-        {(error as any)?.response.errors.map((item: any) => (
-          <div key={item.message}>{item.message}</div>
-        ))}
-      </div>
+        <Spacer vertical="1.4rem" />
 
-      <form onSubmit={formik.handleSubmit}>
-        <input
-          type="email"
-          placeholder="email"
-          name="email"
-          id="email"
-          onChange={formik.handleChange}
-          value={formik.values.email}
-        />
-        <br />
-        <br />
-        <input
-          type="password"
-          placeholder="password"
-          name="password"
-          id="password"
-          onChange={formik.handleChange}
-          value={formik.values.password}
-        />
-        <br />
-        <br />
-        <button
-          type="submit"
-          disabled={!formik.isValid || !formik.dirty || isLoading}
-        >
-          {isLoading ? 'Loading' : 'Submit'}
-        </button>
+        <div>
+          {(error as any)?.response.errors.map((item: any) => (
+            <div key={item.message}>{item.message}</div>
+          ))}
+        </div>
 
-        <Link to="/signup">Sign Up</Link>
-      </form>
-    </>
+        <form onSubmit={formik.handleSubmit}>
+          <Input
+            type="email"
+            label="E-mail"
+            placeholder="email"
+            name="email"
+            id="email"
+            onChange={formik.handleChange}
+            value={formik.values.email}
+          />
+
+          <Spacer vertical="1rem" />
+
+          <Input
+            type="password"
+            label="Password"
+            placeholder="password"
+            name="password"
+            id="password"
+            onChange={formik.handleChange}
+            value={formik.values.password}
+          />
+
+          <Spacer vertical="1rem" />
+
+          <Button
+            type="submit"
+            disabled={!formik.isValid || !formik.dirty || isLoading}
+          >
+            {isLoading ? 'Loading' : 'Submit'}
+          </Button>
+
+          <Link to="/signup">Sign Up</Link>
+        </form>
+      </S.Wrapper>
+    </S.ContainerWrapper>
   );
 };
